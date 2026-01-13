@@ -1,0 +1,40 @@
+{
+  "name": "egorsergeychik/youscore-laravel",
+  "description": "YouScore API SDK for Laravel",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Egor Sergeychik",
+      "email": "sergeychike.egor@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "illuminate/support": "^11.0|^12.0",
+    "illuminate/http": "^11.0|^12.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^10.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "EgorSergeychik\\YouScore\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "EgorSergeychik\\YouScore\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "EgorSergeychik\\YouScore\\YouScoreServiceProvider"
+      ],
+      "aliases": {
+        "YouScore": "EgorSergeychik\\YouScore\\Facades\\YouScore"
+      }
+    }
+  },
+  "minimum-stability": "stable"
+}
