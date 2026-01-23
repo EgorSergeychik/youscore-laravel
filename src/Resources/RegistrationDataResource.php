@@ -17,7 +17,7 @@ class RegistrationDataResource extends AbstractResource
     public function getUnitedStateRegisterData(string|int $contractorCode, bool $showCurrentData = false): Response
     {
         return $this->get("/v1/usr/{$contractorCode}", [
-            'show_current_data' => $showCurrentData ? 'true' : 'false',
+            'showCurrentData' => $showCurrentData ? 'true' : 'false',
         ]);
     }
 
@@ -45,7 +45,7 @@ class RegistrationDataResource extends AbstractResource
     public function getSignificantShareholders(string|int $contractorCode, bool $addHistory = false): Response
     {
         return $this->get("/v1/shareholders/{$contractorCode}", [
-            'add_history' => $addHistory ? 'true' : 'false',
+            'addHistory' => $addHistory ? 'true' : 'false',
         ]);
     }
 
