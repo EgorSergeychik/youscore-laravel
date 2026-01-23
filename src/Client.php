@@ -2,6 +2,7 @@
 
 namespace EgorSergeychik\YouScore;
 
+use EgorSergeychik\YouScore\Resources\ExpressAnalysisResource;
 use EgorSergeychik\YouScore\Resources\RegistrationDataResource;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -46,5 +47,10 @@ class Client
     public function registrationData(): RegistrationDataResource
     {
         return new RegistrationDataResource($this);
+    }
+
+    public function expressAnalysis(): ExpressAnalysisResource
+    {
+        return new ExpressAnalysisResource($this);
     }
 }
