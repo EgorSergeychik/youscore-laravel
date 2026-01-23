@@ -4,6 +4,7 @@ namespace EgorSergeychik\YouScore\Resources;
 
 use EgorSergeychik\YouScore\Client;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 
 abstract class AbstractResource
 {
@@ -11,8 +12,8 @@ abstract class AbstractResource
         protected Client $client
     ) {}
 
-    protected function get(string $url, array $query = []): array
+    protected function get(string $url, array $query = []): Response
     {
-        return $this->client->get($url, $query)->throw()->json();
+        return $this->client->get($url, $query)->throw();
     }
 }
