@@ -14,17 +14,17 @@ class Client
 {
     public function __construct(
         protected string $baseUrl,
-        protected string $apiKey,
+        protected array $apiKeys,
         protected int $timeout,
         protected array $pollingConfig,
     ) {}
 
-    public function buildRequest(): PendingRequest
+    public function buildRequest(string $apiKey): PendingRequest
     {
         return Http::baseUrl($this->baseUrl)
             ->timeout($this->timeout)
             ->acceptJson()
-            ->withToken($this->apiKey)
+            ->withToken($apiKey)
             ->throw();
     }
 
@@ -32,13 +32,13 @@ class Client
      * @throws PollingTimeoutException
      * @throws ConnectionException
      */
-    public function get(string $url, array $query = []): Response
+    public function get(string $url, array $query = [], string $apiKey = ''): Response
     {
         $attempts = $this->pollingConfig['enabled'] ? max(1, $this->pollingConfig['max_attempts']) : 1;
         $delay = $this->pollingConfig['delay'];
 
         for ($i = 1; $i <= $attempts; $i++) {
-            $response = $this->buildRequest()->get($url, $query);
+            $response = $this->buildRequest($apiKey)->get($url, $query);
 
             if ($response->status() !== 202) {
                 return $response;
@@ -57,11 +57,21 @@ class Client
 
     public function registrationData(): RegistrationDataResource
     {
-        return new RegistrationDataResource($this);
+        $key = $this->apiKeys['data'] ?? '';
+        if (empty($key)) {
+            throw new \InvalidArgumentException('YouScore: API key for "Data" module is missing.');
+        }
+
+        return new RegistrationDataResource($this, $key);
     }
 
     public function expressAnalysis(): ExpressAnalysisResource
     {
-        return new ExpressAnalysisResource($this);
+        $key = $this->apiKeys['analytics'] ?? '';
+        if (empty($key)) {
+            throw new \InvalidArgumentException('YouScore: API key for "Analytics" module is missing.');
+        }
+
+        return new ExpressAnalysisResource($this, $key);
     }
 }

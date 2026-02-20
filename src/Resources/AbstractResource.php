@@ -9,11 +9,12 @@ use Illuminate\Http\Client\Response;
 abstract class AbstractResource
 {
     public function __construct(
-        protected Client $client
+        protected Client $client,
+        protected string $apiKey,
     ) {}
 
     protected function get(string $url, array $query = []): Response
     {
-        return $this->client->get($url, $query)->throw();
+        return $this->client->get($url, $query, $this->apiKey)->throw();
     }
 }

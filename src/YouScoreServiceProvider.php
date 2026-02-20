@@ -18,7 +18,7 @@ class YouScoreServiceProvider extends ServiceProvider implements DeferrableProvi
 
             return new Client(
                 baseUrl: $config['base_url'],
-                apiKey: $config['api_key'],
+                apiKeys: $config['api_keys'],
                 timeout: $config['timeout'] ?? 30,
                 pollingConfig: $config['polling'] ?? ['enabled' => false, 'max_attempts' => 1, 'delay' => 1000],
             );

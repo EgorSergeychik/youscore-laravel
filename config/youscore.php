@@ -2,8 +2,12 @@
 
 return [
     'base_url' => env('YOUSCORE_BASE_URL', 'https://api.youscore.com.ua'),
-    'api_key' => env('YOUSCORE_API_KEY', ''),
     'timeout' => env('YOUSCORE_TIMEOUT', 30),
+
+    'api_keys' => [
+        'data' => env('YOUSCORE_DATA_API_KEY', ''),
+        'analytics' => env('YOUSCORE_ANALYTICS_API_KEY', ''),
+    ],
 
     'polling' => [
         'enabled' => env('YOUSCORE_POLLING_ENABLED', true),
