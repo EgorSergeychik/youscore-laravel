@@ -2,8 +2,10 @@
 
 namespace EgorSergeychik\YouScore;
 
+use EgorSergeychik\YouScore\Exceptions\PollingTimeoutException;
 use EgorSergeychik\YouScore\Resources\ExpressAnalysisResource;
 use EgorSergeychik\YouScore\Resources\RegistrationDataResource;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -26,22 +28,31 @@ class Client
             ->throw();
     }
 
+    /**
+     * @throws PollingTimeoutException
+     * @throws ConnectionException
+     */
     public function get(string $url, array $query = []): Response
     {
-        $attempts = $this->pollingConfig['enabled'] ? $this->pollingConfig['max_attempts'] : 1;
+        $attempts = $this->pollingConfig['enabled'] ? max(1, $this->pollingConfig['max_attempts']) : 1;
         $delay = $this->pollingConfig['delay'];
 
-        for ($i = 0; $i < $attempts; $i++) {
+        for ($i = 1; $i <= $attempts; $i++) {
             $response = $this->buildRequest()->get($url, $query);
 
-            if ($response->status() !== 202) return $response;
+            if ($response->status() !== 202) {
+                return $response;
+            }
 
-            if ($i === $attempts-1) return $response;
-
-            usleep($delay * 1000);
+            if ($i < $attempts) {
+                usleep($delay * 1000);
+            }
         }
 
-        return $response;
+        throw new PollingTimeoutException(
+            message: "API is still processing the request after {$attempts} attempts.",
+            response: $response
+        );
     }
 
     public function registrationData(): RegistrationDataResource

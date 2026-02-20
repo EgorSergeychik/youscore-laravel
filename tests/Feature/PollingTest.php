@@ -2,6 +2,7 @@
 
 namespace EgorSergeychik\YouScore\Tests\Feature;
 
+use EgorSergeychik\YouScore\Exceptions\PollingTimeoutException;
 use EgorSergeychik\YouScore\Facades\YouScore;
 use Illuminate\Support\Facades\Http;
 use EgorSergeychik\YouScore\Tests\TestCase;
@@ -27,7 +28,7 @@ class PollingTest extends TestCase
         Http::assertSentCount(3);
     }
 
-    public function test_it_stops_retrying_after_max_attempts()
+    public function test_it_throws_exception_with_response_after_max_attempts()
     {
         // Arrange
         config(['youscore.polling.max_attempts' => 2]);
@@ -39,12 +40,17 @@ class PollingTest extends TestCase
                 ->push(['name' => ['fullName' => 'ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ "Ю-КОНТРОЛ"']], 200)
         ]);
 
-        // Act
-        $response = YouScore::registrationData()->getUnitedStateRegisterData('39404434');
+        try {
+            // Act
+            YouScore::registrationData()->getUnitedStateRegisterData('39404434');
 
-        // Assert
-        $this->assertEquals('Update in progress 2', $response['status']);
+            $this->fail('Expected PollingTimeoutException was not thrown.');
+        } catch (PollingTimeoutException $e) {
+            // Assert
+            $this->assertEquals(202, $e->response->status());
+            $this->assertEquals('Update in progress 2', $e->response->json('status'));
 
-        Http::assertSentCount(2);
+            Http::assertSentCount(2);
+        }
     }
 }
