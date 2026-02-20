@@ -4,6 +4,7 @@ namespace EgorSergeychik\YouScore;
 
 use EgorSergeychik\YouScore\Exceptions\PollingTimeoutException;
 use EgorSergeychik\YouScore\Resources\ExpressAnalysisResource;
+use EgorSergeychik\YouScore\Resources\FinancialIndicatorsResource;
 use EgorSergeychik\YouScore\Resources\RegistrationDataResource;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
@@ -73,5 +74,15 @@ class Client
         }
 
         return new ExpressAnalysisResource($this, $key);
+    }
+
+    public function financialIndicators(): FinancialIndicatorsResource
+    {
+        $key = $this->apiKeys['data'] ?? '';
+        if (empty($key)) {
+            throw new \InvalidArgumentException('YouScore: API key for "Data" module is missing.');
+        }
+
+        return new FinancialIndicatorsResource($this, $key);
     }
 }
